@@ -22,7 +22,10 @@ contract MonitorAaveV3
         address public OnBehalfOf = 0x4415bd986532a2B8A1e702b18EF4A65075d42Db8;
         address public AaveProxyLendingAddress = 0xcC6114B983E4Ed2737E9BD3961c9924e6216c704;
 
-function getHealthFactor(address ProxyAddress, address OnWhichBehalf) external view returns (uint256) {
+        address public aPolWmatic = 0xaCA5e6a7117F54B34B476aB95Bf3034c304e7a81;
+
+
+    function getHealthFactor(address ProxyAddress, address OnWhichBehalf) external view returns (uint256) {
         (, , , , , uint256 healthFactor) = IPoolAaveV3(ProxyAddress)
             .getUserAccountData(OnWhichBehalf);
         
@@ -38,11 +41,10 @@ function getHealthFactor(address ProxyAddress, address OnWhichBehalf) external v
     }
 
     function approve(address token, address spender, uint256 amount) public {
-            // IERC20(0xaD3C5a67275dE4b5554CdD1d961e957f408eF75a).approve(0x8dA9412AbB78db20d0B496573D9066C474eA21B8, 500000000000000000);
             
-            IERC20 maticContract = IERC20(token);//0xaD3C5a67275dE4b5554CdD1d961e957f408eF75a
+            IERC20 TokenContract = IERC20(token);
 
-            maticContract.approve(spender, amount);    
+            TokenContract.approve(spender, amount);    
             
         }
 
@@ -62,6 +64,25 @@ function getHealthFactor(address ProxyAddress, address OnWhichBehalf) external v
         IWrappedTokenGatewayV3 aaveContract = IWrappedTokenGatewayV3(AaveLendingAddress);
         aaveContract.depositETH{value: amount}(WrappedMaticTokenAddress, OnBehalfOf, 0);    
         }
+
+    function withdraw(uint256 amount) public {
+
+        IERC20 aPolWmaticContract = IERC20(aPolWmatic);
+
+        aPolWmaticContract.approve(AaveLendingAddress, type(uint256).max); 
+
+        IWrappedTokenGatewayV3 aaveContract = IWrappedTokenGatewayV3(AaveLendingAddress);
+        aaveContract.withdrawETH(AaveProxyLendingAddress, amount, OnBehalfOf);    
+        }
+
+    
+
+        function withdraw2(uint256 amount) public {
+
+        IWrappedTokenGatewayV3 aaveContract = IWrappedTokenGatewayV3(AaveLendingAddress);
+        aaveContract.withdrawETH(AaveProxyLendingAddress, amount, OnBehalfOf);    
+        }
+        
 
     }
 
